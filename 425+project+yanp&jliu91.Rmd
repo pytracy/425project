@@ -1,0 +1,163 @@
+
+```{r, echo=TRUE}
+library(ggplot2) 
+library(readr) 
+library(ggthemes)
+
+uberAug14Data <- read.csv("~/Desktop/uber-raw-data-aug14.csv")
+uberSep14Data <- read.csv("~/Desktop/uber-raw-data-sep14.csv")
+uberMay14Data <- read.csv("~/Desktop/uber-raw-data-may14.csv")
+uberJun14Data <- read.csv("~/Desktop/uber-raw-data-jun14.csv")
+uberJul14Data <- read.csv("~/Desktop/uber-raw-data-jul14.csv")
+uberApr14Data <- read.csv("~/Desktop/uber-raw-data-apr14.csv")
+
+# Formatting the Date/Time to ‘m/d/Y  H:M:S’ 
+uberAug14Data$Date.Time <- strptime(uberAug14Data$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+uberSep14Data$Date.Time <- strptime(uberSep14Data$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+uberMay14Data$Date.Time <- strptime(uberMay14Data$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+uberJun14Data$Date.Time <- strptime(uberJun14Data$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+uberJul14Data$Date.Time <- strptime(uberJul14Data$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+uberApr14Data$Date.Time <- strptime(uberApr14Data$Date.Time, format = "%m/%d/%Y %H:%M:%S")
+
+# Add a col(hour)
+uberAug14Data$Hour <- as.integer(format(uberAug14Data$Date.Time, "%H"))
+uberSep14Data$Hour <- as.integer(format(uberSep14Data$Date.Time, "%H"))
+uberMay14Data$Hour <- as.integer(format(uberMay14Data$Date.Time, "%H"))
+uberJun14Data$Hour <- as.integer(format(uberJun14Data$Date.Time, "%H"))
+uberJul14Data$Hour <- as.integer(format(uberJul14Data$Date.Time, "%H"))
+uberApr14Data$Hour <- as.integer(format(uberApr14Data$Date.Time, "%H"))
+
+# Add a col(day) 
+uberAug14Data$Day <- as.integer(format(uberAug14Data$Date.Time, "%d"))
+uberSep14Data$Day <- as.integer(format(uberSep14Data$Date.Time, "%d"))
+uberMay14Data$Day <- as.integer(format(uberMay14Data$Date.Time, "%d"))
+uberJun14Data$Day <- as.integer(format(uberJun14Data$Date.Time, "%d"))
+uberJul14Data$Day <- as.integer(format(uberJul14Data$Date.Time, "%d"))
+uberApr14Data$Day <- as.integer(format(uberApr14Data$Date.Time, "%d"))
+
+# Add a col(weekday) 
+uberAug14Data$WeekDay <- as.integer(format(uberAug14Data$Date.Time, "%w"))
+uberSep14Data$WeekDay <- as.integer(format(uberSep14Data$Date.Time, "%w"))
+uberMay14Data$WeekDay <- as.integer(format(uberMay14Data$Date.Time, "%w"))
+uberJun14Data$WeekDay <- as.integer(format(uberJun14Data$Date.Time, "%w"))
+uberJul14Data$WeekDay <- as.integer(format(uberJul14Data$Date.Time, "%w"))
+uberApr14Data$WeekDay <- as.integer(format(uberApr14Data$Date.Time, "%w"))
+
+total <- rbind(uberAug14Data, uberSep14Data, uberMay14Data, uberJun14Data, uberJul14Data, uberApr14Data)
+
+#histograms( day, week, month)
+ggplot(data = total, aes(x = total$Hour)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "green") +
+  scale_x_continuous( breaks = seq(0,23,1)) +
+  scale_y_continuous(breaks = seq(0,350000, 20000)) +
+  labs(x = "Time of the day (00 - 23 hours)", y = "No. of Uber Pickups")
+
+ggplot(data = total, aes(x = total$WeekDay)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "green") +
+  scale_x_continuous( breaks = seq(0,23,1)) +
+  scale_y_continuous(breaks = seq(0,750000, 40000)) +
+  labs(x = "Day of the Week (0:Sunday, 6:Saturday)", y = "No. of Uber Pickups")
+
+
+ggplot(data = total, aes(x = total$Day)) +
+  geom_histogram(binwidth = 1, fill = "blue", color = "green") +
+  scale_x_continuous( breaks = seq(0,30,1)) +
+  scale_y_continuous(breaks = seq(0,160000, 15000)) +
+  labs(x = "Day of the month", y = "No. of Uber Pickups")
+
+library(ggplot2)
+library(maps)
+library(ggthemes)
+min_lat <- 40.5774
+max_lat <- 40.9176
+min_long <- -74.15
+max_long <- -73.7004
+
+ggplot(total, aes(x=Lon, y=Lat, color = WeekDay)) +
+geom_point(size = 1) +
+geom_vline(xintercept = -74.15)+
+geom_vline(xintercept = -74.05)+
+geom_vline(xintercept = -73.95)+
+geom_vline(xintercept = -73.85)+
+geom_vline(xintercept = -73.75)+
+geom_hline(yintercept = 40.6)+
+geom_hline(yintercept = 40.7)+
+geom_hline(yintercept = 40.8)+
+geom_hline(yintercept = 40.9)+
+scale_x_continuous(limits = c(min_long, max_long)) +
+scale_y_continuous(limits = c(min_lat, max_lat)) +
+ggtitle("NYC MAP BASED ON UBER RIDES- AUG 14 EACH DAY OF THE WEEK (0:Sunday, 6:Saturday)")
+
+
+ggplot(total, aes(x=Lon, y=Lat, color = Hour)) +
+geom_point(size = 1) +
+geom_vline(xintercept = -74.15)+
+geom_vline(xintercept = -74.05)+
+geom_vline(xintercept = -73.95)+
+geom_vline(xintercept = -73.85)+
+geom_vline(xintercept = -73.75)+
+geom_hline(yintercept = 40.6)+
+geom_hline(yintercept = 40.7)+
+geom_hline(yintercept = 40.8)+
+geom_hline(yintercept = 40.9)+
+scale_x_continuous(limits = c(min_long, max_long)) +
+scale_y_continuous(limits = c(min_lat, max_lat)) +
+ggtitle("NYC MAP BASED ON UBER RIDES -AUG 14 EACH HOUR (0 to 23)")
+
+```
+
+```{r, echo=TRUE}
+#active vehicles
+library(ggplot2) 
+library(readr) 
+
+active <- read_csv("~/Desktop/active v and trips.csv")
+acv<- active$active_vehicles
+t=active$trips
+
+ggplot(active, aes(x=dispatching_base_number, active_vehicles)) + 
+  geom_point()+
+  scale_x_discrete("dispatching_base_number")+
+  scale_y_continuous(limits = c(100, 4500))+
+  labs(x = "Base Number", y = "No. of Active Vehicles")
+
+ggplot(active, aes(x=dispatching_base_number, trips)) + 
+  geom_point()+
+  scale_x_discrete("dispatching_base_number")+
+  scale_y_continuous(limits = c(min(t), max(t)))+
+  labs(x = "Base Number", y = "No. of Trips")
+
+```
+
+```{r, echo=TRUE}
+#acceleration graph
+library(ggplot2) 
+library(readr)
+Monthday <- read.csv("~/Desktop/Monthday.csv")
+April1<- Monthday$Apr
+April<- April1[1:30]
+MAY1<- Monthday$May
+MAY<- MAY1[1:30]
+June1<- Monthday$Jun
+June<- June1[1:30]
+July1<- Monthday$Jul
+July<- July1[1:30]
+August1<- Monthday$Aug
+August<- August1[1:30]
+September1<- Monthday$Sep
+September<- September1[1:30]
+X<- c(1: 180)
+all<- c(April, MAY, June, July, August, September)
+o <- matrix(all,ncol=1,byrow=TRUE)
+colnames(o) <- c("all")
+rownames(o)<- c(1:180)
+o <- as.table(o)
+write.csv(x=o, file = "o.csv")
+O <- read.csv("~/Desktop/o.csv")
+ggplot(O, aes(x=X, all)) + 
+  geom_line()+
+  scale_x_discrete("Days in toal")+
+  scale_y_continuous(limits = c(10000, 45000))+
+  labs(x = "DAYS", y = "No. of Trips")
+
+```
